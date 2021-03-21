@@ -45,20 +45,47 @@ fn build()->std::io::Result<()>{
     };
 
     tera.autoescape_on(vec![]);
-    //只对md文件渲染
+
+    //先拷贝templates中的css文件
+    for entry in fs::read_dir(PathBuf::from("templates")).unwrap(){
+        let src=entry?.path();
+
+        let mut dst=PathBuf::from("build");
+        dst.push(src.file_name().unwrap());
+
+        if src.extension().unwrap() == "css"{
+            fs::write(dst,fs::read(src).unwrap())?;
+        }
+
+    }
+    //只对md文件渲染,如果不是md，则直接拷贝
     for entry in fs::read_dir(PathBuf::from("src")).unwrap(){
 
         let entry=entry?;
         let path=entry.path();
-        if path.extension().unwrap() != "md"{
-            continue;
-        }
         let mut dst=PathBuf::from("build");
         dst.push(path.file_name().unwrap());
-        dst.set_extension("html");
-        render(&tera,&path,&dst).unwrap();
+        if path.extension().unwrap() != "md"{
+            fs::write(&dst, fs::read(&path).unwrap()).unwrap();
+            println!("create {:?} read {:?}",&dst,&path);
+        }
+        else{
+            dst.set_extension("html");
+
+            //此处执行了渲染并输出
+            //感觉不太好
+            render(&tera,&path,&dst).unwrap();
+        }
+        
     };
     Ok(())
+}
+
+use serde::Serialize;
+#[derive(Debug,Serialize)]
+struct Item{
+    name:String,
+    url:String
 }
 //上下文,源文件,目标文件
 fn render(tera:&Tera,src:&PathBuf,dst:&PathBuf)->std::io::Result<()>{
@@ -68,8 +95,32 @@ fn render(tera:&Tera,src:&PathBuf,dst:&PathBuf)->std::io::Result<()>{
     //根据源文件生成上下文
     let mut context=Context::new();
 
+    let mut post_list = Vec::new();
+    for entry in fs::read_dir(PathBuf::from("src")).unwrap(){
+        let file_name=entry?.file_name().into_string().unwrap();
+
+        let pos=file_name.rfind('.').unwrap();
+        let (file_name,_)=file_name.split_at(pos);
+        let file_name=file_name.to_string();
+        
+        let mut url=String::new();
+        url.push_str(file_name.as_str());
+        url.push_str(".html");
+
+        post_list.push(Item{name:file_name,url:url});
+    };
+    context.insert("dir_list", &post_list);
     context.insert("post_context", &post_context);
-    let content=tera.render("post.html", &context).unwrap();
+
+    let template_type:&str;
+    if dst.file_name().unwrap().to_str().unwrap() == "index.html"{
+        template_type="index.html";
+    }
+    else{
+        template_type="post.html";
+    }
+
+    let content=tera.render(template_type, &context).unwrap();
 
     fs::write(dst, content).unwrap();
     Ok(())

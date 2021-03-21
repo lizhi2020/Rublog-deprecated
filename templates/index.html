@@ -1,0 +1,14 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="prism-okaidia.css">
+    </head>
+    <body>
+        <div class="page-inner">
+            {% for item in dir_list %}
+            <li><a href="{{ item.url }}">{{ item.name }}</a></li>
+            {% endfor %}
+        </div>
+        
+    </body>
+</html>

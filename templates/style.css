@@ -1,3 +1,9 @@
+.page-inner {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px 15px 40px 15px;
+}
 .home-page{
     margin: 0;
     background: linear-gradient(to right,#003973 0,#e5e5be 100%);
