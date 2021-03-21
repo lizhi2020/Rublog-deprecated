@@ -201,6 +201,7 @@ fn init_project(path:&String){
     //将exe路径下的template 拷贝到 项目中
 
     let mut template_dir=env::current_exe().unwrap();
+    template_dir.pop();
     template_dir.push("templates");
 
     if !template_dir.is_dir(){
