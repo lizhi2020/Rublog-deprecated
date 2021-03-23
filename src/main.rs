@@ -2,6 +2,8 @@ use tera::{Tera,Context};
 use comrak::{markdown_to_html, ComrakOptions};
 use structopt::StructOpt;
 
+mod webclient;
+
 #[derive(StructOpt,Debug)]
 #[structopt(about = "the stupid content tracker")]
 enum Rub {
@@ -15,7 +17,8 @@ enum Rub {
     Clear {
         name:Option<String>
     },
-    Build
+    Build,
+    Update
 }
 
 fn clear(name:&Option<String>){
@@ -153,7 +156,22 @@ fn main() {
         Rub::Build=>{
             build().unwrap();
         }
+        Rub::Update=>{
+            update().unwrap();
+        }
     }
+}
+fn update()->std::io::Result<()>{
+    let target="https://raw.githubusercontent.com/lizhi2020/Rublog/main/templates/prism-okaidia.css";
+    let test = webclient::get_file(target)?;
+    let mut dst=env::current_exe()?;
+    dst.pop();
+    dst.push("templates");
+    dst.push("prism-okaidia.css");
+
+    fs::write(&dst, test)?;
+    println!("{:?}",dst);
+    Ok(())
 }
 use std::{fs,path::PathBuf};
 use std::io::ErrorKind;

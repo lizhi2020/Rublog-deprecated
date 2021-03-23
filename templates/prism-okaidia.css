@@ -36,13 +36,13 @@ pre[class*="language-"] {
 	border-radius: 0.3em;
 }
 
-:not(pre) > code[class*="language-"],
+:not(pre) > code,
 pre {
 	background: #272822;
 }
 
 /* Inline code */
-:not(pre) > code[class*="language-"] {
+:not(pre) > code {
 	padding: .1em;
 	border-radius: .3em;
 	white-space: normal;
