@@ -162,15 +162,21 @@ fn main() {
     }
 }
 fn update()->std::io::Result<()>{
-    let target="https://raw.githubusercontent.com/lizhi2020/Rublog/main/templates/prism-okaidia.css";
-    let test = webclient::get_file(target)?;
+    let target="https://raw.githubusercontent.com/lizhi2020/Rublog/main/templates/";
     let mut dst=env::current_exe()?;
     dst.pop();
     dst.push("templates");
-    dst.push("prism-okaidia.css");
 
-    fs::write(&dst, test)?;
-    println!("{:?}",dst);
+    for item in ["home.html","about.html","index.html","post.html","prism-okaidia.css"].iter(){
+        let mut url=String::from(target);
+        url.push_str(item);
+        let content = webclient::get_file(url.as_str())?;
+        dst.push(item);
+
+        fs::write(&dst, content)?;
+        println!("{:?} <-> {}",dst,url);
+        dst.pop();
+    }
     Ok(())
 }
 use std::{fs,path::PathBuf};
