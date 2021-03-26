@@ -113,3 +113,22 @@ a {
 .animate-slide-in-right {
     right: -100%;
 }
+
+    	.hljs {
+    		padding: 0;
+    	}
+    	.hljs-ln td {
+		    padding: 2px 10px;
+		}
+		/* for block of numbers */
+		td.hljs-ln-numbers {
+		    text-align: center;
+		    color: #2F7689;
+		    background-color: #EFF2F3;
+		    /*border-right: 0.5px solid #CCC;*/
+		    vertical-align: top;
+		}
+		/* for block of code */
+		td.hljs-ln-code {
+		    padding-left: 5px;
+		}
