@@ -88,7 +88,8 @@ use serde::Serialize;
 #[derive(Debug,Serialize)]
 struct Item{
     name:String,
-    url:String
+    url:String,
+    time:u64
 }
 //上下文,源文件,目标文件
 fn render(tera:&Tera,src:&PathBuf,dst:&PathBuf)->std::io::Result<()>{
@@ -100,18 +101,26 @@ fn render(tera:&Tera,src:&PathBuf,dst:&PathBuf)->std::io::Result<()>{
 
     let mut post_list = Vec::new();
     for entry in fs::read_dir(PathBuf::from("src")).unwrap(){
-        let file_name=entry?.file_name().into_string().unwrap();
+        let path=entry?.path();
+        let file_name=path.file_name().unwrap().to_str().unwrap().to_string();
 
         let pos=file_name.rfind('.').unwrap();
         let (file_name,_)=file_name.split_at(pos);
         let file_name=file_name.to_string();
+
+        if file_name==String::from("index"){
+            continue;
+        }
         
+        let last_mod= fs::metadata(path)?.modified()?.elapsed().unwrap().as_secs();
         let mut url=String::new();
         url.push_str(file_name.as_str());
         url.push_str(".html");
 
-        post_list.push(Item{name:file_name,url:url});
+        post_list.push(Item{name:file_name,url:url,time:last_mod});
     };
+
+    post_list.sort_by_key(|k| k.time);
     context.insert("dir_list", &post_list);
     context.insert("post_context", &post_context);
 
@@ -167,7 +176,7 @@ fn update()->std::io::Result<()>{
     dst.pop();
     dst.push("templates");
 
-    for item in ["home.html","about.html","index.html","post.html","prism-okaidia.css"].iter(){
+    for item in ["home.html","about.html","index.html","post.html","prism-okaidia.css","style.css"].iter(){
         let mut url=String::from(target);
         url.push_str(item);
         let content = webclient::get_file(url.as_str())?;
