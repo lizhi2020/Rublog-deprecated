@@ -1,11 +1,13 @@
 language: rust
 cache: cargo
+  directories:
+  - target/release
 script:
 - cargo build --release
 deploy:
   provider: releases
   api_key: "$GITHUB_TOKEN"
-  file: "$TRAVIS_BUILD_DIR/*"
+  file: "$TRAVIS_BUILD_DIR/target/release/rublog"
   skip_cleanup: true
   on:
     tags: true
