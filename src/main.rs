@@ -2,10 +2,12 @@ use tera::{Tera,Context};
 use comrak::{markdown_to_html, ComrakOptions};
 use structopt::StructOpt;
 
-mod webclient;
+pub mod update;
+pub mod webclient;
 
+static VERSION:&str="v0.2.0";
 #[derive(StructOpt,Debug)]
-#[structopt(about = "the stupid content tracker")]
+#[structopt(about = "a static blog framework",version=VERSION)]
 enum Rub {
     Init {
         name:String
@@ -18,7 +20,8 @@ enum Rub {
         name:Option<String>
     },
     Build,
-    Update
+    Update,
+    Upgrade
 }
 
 fn clear(name:&Option<String>){
@@ -165,28 +168,14 @@ fn main() {
             build().unwrap();
         }
         Rub::Update=>{
-            update().unwrap();
+            update::update().unwrap();
+        }
+        Rub::Upgrade=>{
+            update::upgrade().unwrap();
         }
     }
 }
-fn update()->std::io::Result<()>{
-    let target="https://raw.githubusercontent.com/lizhi2020/Rublog/main/templates/";
-    let mut dst=env::current_exe()?;
-    dst.pop();
-    dst.push("templates");
 
-    for item in ["home.html","about.html","index.html","post.html","prism-okaidia.css","style.css"].iter(){
-        let mut url=String::from(target);
-        url.push_str(item);
-        let content = webclient::get_file(url.as_str())?;
-        dst.push(item);
-
-        fs::write(&dst, content)?;
-        println!("{:?} <-> {}",dst,url);
-        dst.pop();
-    }
-    Ok(())
-}
 use std::{fs,path::PathBuf};
 use std::io::ErrorKind;
 use std::env;
