@@ -1,4 +1,5 @@
 language: rust
+os: windows
 cache: cargo
 script:
 - cargo build --release
