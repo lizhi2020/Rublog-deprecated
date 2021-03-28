@@ -9,7 +9,7 @@ before_deploy:
 deploy:
   provider: releases
   api_key: "$GITHUB_TOKEN"
-  file: "$TRAVIS_BUILD_DIR/target/release/rublog.exe"
+  file: "rublog_$TRAVIS_TAG.zip"
   skip_cleanup: true
   on:
     tags: true
