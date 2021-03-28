@@ -4,8 +4,8 @@ script:
 - cargo build
 deploy:
   provider: releases
+  api_key: "$GITHUB_TOKEN"
+  file: "target/release"
   skip_cleanup: true
-  github_token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
-  keep_history: true
   on:
-    branch: main
+    tags: true
