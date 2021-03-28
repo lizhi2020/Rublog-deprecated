@@ -6,7 +6,7 @@ script:
 deploy:
   provider: releases
   api_key: "$GITHUB_TOKEN"
-  file: "$TRAVIS_BUILD_DIR/target/release/rublog"
+  file: "$TRAVIS_BUILD_DIR/target/release/rublog.exe"
   skip_cleanup: true
   on:
     tags: true
