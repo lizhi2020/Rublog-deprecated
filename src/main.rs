@@ -150,7 +150,6 @@ fn new(pattern:String,name:String){
     }
 }
 fn main() {
-
     let args= Rub::from_args();
     match args{
         Rub::Init{name}=>{
