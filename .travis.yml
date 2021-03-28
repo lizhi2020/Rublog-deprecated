@@ -3,6 +3,9 @@ os: windows
 cache: cargo
 script:
 - cargo build --release
+before_deploy:
+  - cp target/release/rublog.exe rublog.exe
+  - 7z a rublog_$TRAVIS_TAG.zip rublog.exe templates
 deploy:
   provider: releases
   api_key: "$GITHUB_TOKEN"
